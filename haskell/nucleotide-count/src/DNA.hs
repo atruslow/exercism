@@ -1,21 +1,17 @@
+{-# OPTIONS_GHC -Wall #-}
+
 module DNA (nucleotideCounts, Nucleotide(..)) where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
+import qualified Text.Read as Read
 
 data Nucleotide = A | C | G | T deriving (Eq, Ord, Show, Read)
 
 nucleotideCounts :: String -> Either String (Map Nucleotide Int)
-nucleotideCounts xs = case mapM toNucleotide xs of
-    Just dnaStr -> Right (Map.fromListWith (+) [(x, 1) | x <- dnaStr])
-    Nothing -> Left "Invalid"
+nucleotideCounts xs = do 
+    dnaStr <- mapM toNucleotide xs
+    Right (Map.fromListWith (+) [(x, 1) | x <- dnaStr])
 
-toNucleotide :: Char -> Maybe Nucleotide
-toNucleotide 'A' = Just A
-toNucleotide 'C' = Just C
-toNucleotide 'G' = Just G
-toNucleotide 'T' = Just T
-toNucleotide _ = Nothing
-
-frequency :: (Ord a) => [a] -> [(a, Int)]
-frequency xs = Map.toList (Map.fromListWith (+) [(x, 1) | x <- xs])
+toNucleotide :: Char -> Either String Nucleotide
+toNucleotide x = Read.readEither [x]
